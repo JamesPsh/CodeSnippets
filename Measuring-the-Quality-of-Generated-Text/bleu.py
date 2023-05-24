@@ -14,7 +14,8 @@ def count_ngrams(sentence: List[str], n: int) -> Counter:
     Returns:
         Counter: A Counter object with each n-gram as the key and its count as the value.
     """
-    return Counter([tuple(sentence[i:i + n]) for i in range(len(sentence) - n + 1)])
+    ngrams = [tuple(sentence[i:i + n]) for i in range(len(sentence) - n + 1)]
+    return Counter(ngrams)
 
 
 def sentence_bleu(references: List[List[str]], candidate: List[str], weights: List[float] = [0.25, 0.25, 0.25, 0.25]) -> float:
