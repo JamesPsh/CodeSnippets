@@ -48,7 +48,7 @@ def sentence_bleu(references: List[List[str]], candidate: List[str], weights: Li
         for reference in references:
             reference_counts = reference_counts | count_ngrams(reference, k)
 
-    # Calculate final score
+        # Calculate final score
         if not candidate_counts:
             p_ns.append(0)
         else:
