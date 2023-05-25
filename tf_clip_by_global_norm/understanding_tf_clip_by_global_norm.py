@@ -30,7 +30,10 @@ def my_clip_by_global_norm(t_list, clip_norm):
 
 
 if __name__ == '__main__':
-
+     
+    print('=====================================================')
+    print('================tf.clip_by_global_norm===============')
+    print('=====================================================')
     # Define a simple model
     layer = tf.keras.layers.Dense(2, activation='relu')
 
@@ -63,3 +66,21 @@ if __name__ == '__main__':
 
     print('==== Compare norms ====')
     print(f'tf_norm: {tf_norm}, my_norm: {my_norm}')
+    print()
+    print()
+
+    
+    print('=====================================================')
+    print('================        tf.norm       ===============')
+    print('=====================================================')
+
+    # Calculate the L2 norm of the tensor using tf.norm
+    x = tf.constant([3.0, 4.0])
+    l2_norm = tf.norm(x)
+
+    # Manually calculate the L2 norm for comparison
+    manual_l2_norm = tf.sqrt(tf.reduce_sum(tf.square(x)))
+
+    print(f'L2 norm calculated using tf.norm: {l2_norm}')
+    print(f'Manually calculated L2 norm: {manual_l2_norm}')
+
