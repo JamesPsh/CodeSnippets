@@ -1,67 +1,72 @@
+'''
+BLEU Score(Bilingual Evaluation Understudy Score)
+https://wikidocs.net/31695
+'''
+
+import numpy as np
 from collections import Counter
-import math
-from typing import List, Tuple
+from nltk import ngrams
 
 
-def count_ngrams(sentence: List[str], n: int) -> Counter:
+
+# 토큰화 된 문장(tokens)에서 n-gram을 카운트
+def simple_count(tokens, n):
     """
-    Count the n-grams in the given sentence.
+    This function counts the occurrences of n-grams in the given list of tokens.
 
     Args:
-        sentence (List[str]): A list of words/tokens in the sentence.
-        n (int): The "n" in n-gram, e.g. 1 for unigram, 2 for bigram, etc.
+        tokens (list): A list of tokens from a sentence.
+        n (int): The size of the n-gram. For example, use 1 for unigram, 2 for bigram, etc.
 
     Returns:
-        Counter: A Counter object with each n-gram as the key and its count as the value.
+        Counter: A Counter dictionary that maps each n-gram to its frequency count.
+
+    Example:
+        >>> simple_count(['I', 'am', 'studying', 'NLP'], 2)
+        Counter({('I', 'am'): 1, ('am', 'studying'): 1, ('studying', 'NLP'): 1})
+
     """
-    ngrams = [tuple(sentence[i:i + n]) for i in range(len(sentence) - n + 1)]
-    return Counter(ngrams)
+    # Use nltk's ngrams function to generate n-grams
+    # Then use Counter to count the frequency of each n-gram
+    return Counter(ngrams(tokens, n))
 
 
-def sentence_bleu(references: List[List[str]], candidate: List[str], weights: List[float] = [0.25, 0.25, 0.25, 0.25]) -> float:
+def count_clip(candidate, reference_list, n):
     """
-    Calculate the sentence-level BLEU score for a candidate sentence.
+    This function calculates the clipped count of n-grams in the candidate sentence.
+
+    The clipped count of each n-gram is the minimum of its count in the candidate sentence
+    and its maximum count in any of the reference sentences.
 
     Args:
-        references (List[List[str]]): A list of reference translations, each as a list of words/tokens.
-        candidate (List[str]): The candidate translation as a list of words/tokens.
-        weights (List[float]): The weights for the BLEU score calculation, typically [0.25, 0.25, 0.25, 0.25].
+        candidate (list): A list of tokens from the candidate sentence.
+        reference_list (list of list): A list of lists of tokens from the reference sentences.
+        n (int): The size of the n-gram. For example, use 1 for unigram, 2 for bigram, etc.
 
     Returns:
-        float: The BLEU score.
+        dict: A dictionary that maps each n-gram in the candidate sentence to its clipped count.
+
+    Example:
+        >>> count_clip(['I', 'am', 'studying', 'NLP'], [['I', 'am', 'learning', 'NLP']], 2)
+        {('I', 'am'): 1, ('am', 'studying'): 0, ('studying', 'NLP'): 1}
+
     """
+    # Count n-grams in the candidate sentence
+    ca_cnt = simple_count(candidate, n)
+    max_ref_cnt_dict = Counter()
 
-    # Brevity Penalty
-    ref_lens = [len(ref) for ref in references]
-    closest_ref_len = min(ref_lens, key=lambda ref_len: (abs(ref_len - len(candidate)), ref_len))
-    if len(candidate) < closest_ref_len:
-        bp = math.exp(1 - float(closest_ref_len) / len(candidate))
-    else:
-        bp = 1.0
+    # For each reference sentence
+    for ref in reference_list: 
+        # Count n-grams in the reference sentence
+        ref_cnt = simple_count(ref, n)
 
-    # Modified precision for each gram
-    p_ns = []  
-    for k in range(1, 5):
-        candidate_counts = count_ngrams(candidate, k)
-        reference_counts = Counter()
+        # For each n-gram in the reference sentence, update its maximum count
+        for n_gram in ref_cnt:
+            max_ref_cnt_dict[n_gram] = max(ref_cnt[n_gram], max_ref_cnt_dict[n_gram])
 
-        for reference in references:
-            reference_counts = reference_counts | count_ngrams(reference, k)
-
-        # Calculate final score
-        if not candidate_counts:
-            p_ns.append(0)
-        else:
-            clipped_counts = {ngram: min(count, candidate_counts[ngram]) for ngram, count in reference_counts.items()}
-            p_ns.append(sum(clipped_counts.values()) / float(max(sum(candidate_counts.values()), 1)))
-
-    score = bp * math.exp(sum(w_i*math.log(p_i) if p_i != 0 else 0 for w_i, p_i in zip(weights, p_ns)))
-
-    return score
-
-
-if __name__ == "__main__":
-    references = [['the', 'cat', 'is', 'on', 'the', 'mat']]
-    candidate = ['the', 'cat', 'is', 'on', 'mat']
-    score = sentence_bleu(references, candidate)
-    print(score)
+    # Compute clipped counts
+    return {
+        # The clipped count of each n-gram is the minimum of its count in the candidate sentence
+        # and its maximum count in any of the reference sentences.
+        n_gram: min(ca_cnt.get(n_gram, 0), max_ref_cnt_dict.get(n_gram, 0)) for n_gram in ca_cnt
+    }
