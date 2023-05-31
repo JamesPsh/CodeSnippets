@@ -70,3 +70,37 @@ def count_clip(candidate, reference_list, n):
         # and its maximum count in any of the reference sentences.
         n_gram: min(ca_cnt.get(n_gram, 0), max_ref_cnt_dict.get(n_gram, 0)) for n_gram in ca_cnt
     }
+
+
+def modified_precision(candidate, reference_list, n):
+    """
+    Calculate the modified precision of a candidate translation text.
+    Modified precision is a part of BLEU (Bilingual Evaluation Understudy) score calculation. 
+    It measures how frequently the predicted n-grams appear in the reference text.
+    
+    Args:
+    candidate (list): The candidate translation text as a list of words.
+    reference_list (list): The reference translation texts as a list of words.
+    n (int): The size of the n-gram.
+    
+    Returns:
+    float: The modified precision score.
+    """
+    # Count the maximum number of times that each n-gram occurs in any single reference translation
+    clip_cnt = count_clip(candidate, reference_list, n)
+
+    # Calculate the sum of clipped counts for the numerator of the modified precision
+    total_clip_cnt = sum(clip_cnt.values())
+
+    # Count the number of n-grams in the candidate translation
+    cnt = simple_count(candidate, n)
+
+    # Calculate the sum of counts for the denominator of the modified precision
+    total_cnt = sum(cnt.values())
+
+    # To avoid ZeroDivisionError if total count is 0
+    if total_cnt == 0: 
+      total_cnt = 1
+
+    # Return the modified precision as the ratio of total clipped count to total count
+    return (total_clip_cnt / total_cnt)
