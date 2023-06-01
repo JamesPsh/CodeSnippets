@@ -116,3 +116,16 @@ def closest_ref_length(candidate, reference_list):
     ref_lens = (len(ref) for ref in reference_list)
     closest_ref_len = min(ref_lens, key=lambda ref_len: (abs(ref_len - ca_len), ref_len))
     return closest_ref_len
+
+
+def brevity_penalty(candidate, reference_list):
+    """Computes the brevity penalty for BLEU (Bilingual Evaluation Understudy) score calculation."""
+    ca_len = len(candidate)
+    ref_len = closest_ref_length(candidate, reference_list)
+
+    if ca_len > ref_len:
+        return 1
+    elif ca_len == 0 :
+        return 0
+    else:
+        return np.exp(1 - ref_len/ca_len)
