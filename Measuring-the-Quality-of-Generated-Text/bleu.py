@@ -103,3 +103,16 @@ def modified_precision(candidate, reference_list, n):
 
     # Return the modified precision as the ratio of total clipped count to total count
     return (total_clip_cnt / total_cnt)
+
+
+def closest_ref_length(candidate, reference_list):
+    """
+    Given a candidate string, find and return the length of the reference string that is closest in length to the candidate.
+
+    This function takes a candidate string and a list of reference strings as input, and returns the length of the reference string whose length is closest to the candidate string's length. 
+    If there are multiple reference strings with the same length difference, it chooses the one with the shorter length.
+    """
+    ca_len = len(candidate)
+    ref_lens = (len(ref) for ref in reference_list)
+    closest_ref_len = min(ref_lens, key=lambda ref_len: (abs(ref_len - ca_len), ref_len))
+    return closest_ref_len
