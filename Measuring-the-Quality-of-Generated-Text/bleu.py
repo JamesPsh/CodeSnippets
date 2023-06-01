@@ -145,3 +145,19 @@ def bleu_score(candidate, reference_list, weights=[0.25, 0.25, 0.25, 0.25]):
 
     # Return the BLEU score, which is the brevity penalty times the exponential of the average log precision.
     return bp * np.exp(score)
+
+
+if __name__ == '__main__':
+    import nltk.translate.bleu_score as bleu
+
+    candidate = 'It is a guide to action which ensures that the military always obeys the commands of the party'
+    references = [
+        'It is a guide to action that ensures that the military will forever heed Party commands',
+        'It is the guiding principle which guarantees the military forces always being under the command of the Party',
+        'It is the practical guide for the army always to heed the directions of the party'
+    ]
+
+    print('실습 코드의 BLEU :',bleu_score(candidate.split(),list(map(lambda ref: ref.split(), references))))
+    print('패키지 NLTK의 BLEU :',bleu.sentence_bleu(list(map(lambda ref: ref.split(), references)),candidate.split()))
+    # 실습 코드의 BLEU : 0.5045666840058485
+    # 패키지 NLTK의 BLEU : 0.5045666840058485
