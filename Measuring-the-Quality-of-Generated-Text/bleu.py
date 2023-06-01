@@ -129,3 +129,19 @@ def brevity_penalty(candidate, reference_list):
         return 0
     else:
         return np.exp(1 - ref_len / ca_len)
+
+
+def bleu_score(candidate, reference_list, weights=[0.25, 0.25, 0.25, 0.25]):
+    """Computes the BLEU (Bilingual Evaluation Understudy) score for a candidate string."""
+
+    # Compute the brevity penalty.
+    bp = brevity_penalty(candidate, reference_list)
+
+    # Compute the modified precision for each order of n-grams.
+    p_n = [modified_precision(candidate, reference_list, n=n) for n, _ in enumerate(weights,start=1)] 
+
+    # Compute the weighted average of the log precisions, using the provided weights.
+    score = np.sum([w_i * np.log(p_i) if p_i != 0 else 0 for w_i, p_i in zip(weights, p_n)])
+
+    # Return the BLEU score, which is the brevity penalty times the exponential of the average log precision.
+    return bp * np.exp(score)
