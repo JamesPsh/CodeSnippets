@@ -53,7 +53,7 @@ def count_clip(candidate, reference_list, n):
     """
     # Count n-grams in the candidate sentence
     ca_cnt = simple_count(candidate, n)
-    max_ref_cnt_dict = Counter()
+    max_ref_cnt_dict = {}
 
     # For each reference sentence
     for ref in reference_list: 
@@ -62,7 +62,7 @@ def count_clip(candidate, reference_list, n):
 
         # For each n-gram in the reference sentence, update its maximum count
         for n_gram in ref_cnt:
-            max_ref_cnt_dict[n_gram] = max(ref_cnt[n_gram], max_ref_cnt_dict[n_gram])
+            max_ref_cnt_dict[n_gram] = max(ref_cnt[n_gram], max_ref_cnt_dict.get(n_gram, 0))
 
     # Compute clipped counts
     return {
@@ -99,8 +99,7 @@ def modified_precision(candidate, reference_list, n):
     total_cnt = sum(cnt.values())
 
     # To avoid ZeroDivisionError if total count is 0
-    if total_cnt == 0: 
-      total_cnt = 1
+    total_cnt = 1 if total_cnt == 0 else total_cnt
 
     # Return the modified precision as the ratio of total clipped count to total count
     return (total_clip_cnt / total_cnt)
