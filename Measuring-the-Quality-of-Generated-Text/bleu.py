@@ -128,4 +128,4 @@ def brevity_penalty(candidate, reference_list):
     elif ca_len == 0 :
         return 0
     else:
-        return np.exp(1 - ref_len/ca_len)
+        return np.exp(1 - ref_len / ca_len)
