@@ -139,7 +139,8 @@ def bleu_score(candidate, reference_list, weights=[0.25, 0.25, 0.25, 0.25]):
     p_n = [modified_precision(candidate, reference_list, n=n) for n, _ in enumerate(weights,start=1)] 
 
     # Compute the weighted average of the log precisions, using the provided weights.
-    score = np.sum([w_i * np.log(p_i) if p_i != 0 else 0 for w_i, p_i in zip(weights, p_n)])
+    # score = np.sum([w_i * np.log(p_i) if p_i != 0 else 0 for w_i, p_i in zip(weights, p_n)])
+    score = np.sum([w_i * np.log(p_i + 1e-15) for w_i, p_i in zip(weights, p_n)])
 
     # Return the BLEU score, which is the brevity penalty times the exponential of the average log precision.
     return bp * np.exp(score)
