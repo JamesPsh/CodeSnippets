@@ -25,7 +25,7 @@ def ucb1_strategy(success_counts, fail_counts):
 
 def softmax_strategy(success_counts, fail_counts, t=0.05):
     mean = (success_counts) / (success_counts + fail_counts + 1e-10)
-    select_rate = np.exp(mean / t)/ np.sum(np.exp(mean / t))
+    select_rate = np.exp(mean / t) / np.sum(np.exp(mean / t))
     return np.random.choice(len(select_rate), p=select_rate)
 
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
             else:
                 selected_arm = select_arm_method(success_counts, fail_counts)
 
-            # 선택한 팔의 컨버전 여부 판덩
+            # 선택한 팔의 컨버전 여부 판정
             if np.random.rand() < actual_cvr[selected_arm]:
                 success_counts[selected_arm] += 1
             else:
