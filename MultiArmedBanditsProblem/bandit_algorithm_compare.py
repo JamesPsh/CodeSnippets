@@ -24,7 +24,7 @@ def ucb1_strategy(success_counts, fail_counts):
 
 
 def softmax_strategy(success_counts, fail_counts, t=0.05):
-    mean = (success_counts) / (success_counts + fail_counts)
+    mean = (success_counts) / (success_counts + fail_counts + 1e-10)
     select_rate = np.exp(mean / t)/ np.sum(np.exp(mean / t))
     return np.random.choice(len(select_rate), p=select_rate)
 
