@@ -5,15 +5,27 @@ import matplotlib.pyplot as plt
 
 
 def random_strategy(success_counts, fail_counts):
+    """
+    Random strategy for arm selection.
+    It selects an arm randomly irrespective of its success or failure history.
+    """
     return np.random.choice(len(success_counts))
 
 
 def baysian_ucb_strategy(success_counts, fail_counts, q=0.95):
+    """
+    Bayesian Upper Confidence Bound strategy for arm selection.
+    It prefers arms with high uncertainty and high reward.
+    """
     score = scipy.stats.beta.ppf(q, success_counts + 1, fail_counts + 1)
     return np.argmax(score)
 
 
 def ucb1_strategy(success_counts, fail_counts):
+    """
+    UCB1 strategy for arm selection.
+    It balances the exploration and exploitation based on average reward and count of selections.
+    """
     mean = (success_counts) / (success_counts + fail_counts)
     total_count = np.sum(success_counts + fail_counts)
     ucb = (
@@ -24,12 +36,20 @@ def ucb1_strategy(success_counts, fail_counts):
 
 
 def softmax_strategy(success_counts, fail_counts, t=0.05):
+    """
+    Softmax strategy for arm selection.
+    It uses the average reward of each arm to compute a probability distribution and selects an arm based on the distribution.
+    """
     mean = (success_counts) / (success_counts + fail_counts + 1e-10)
     select_rate = np.exp(mean / t) / np.sum(np.exp(mean / t))
     return np.random.choice(len(select_rate), p=select_rate)
 
 
 def softmax_annealing_strategy(success_counts, fail_counts, initial_t=0.1, k=100.0):
+    """
+    Softmax Annealing strategy for arm selection.
+    It is similar to softmax strategy but it reduces the temperature over time, encouraging more exploitation of the best arm.
+    """
     mean = (success_counts) / (success_counts + fail_counts)
     t = initial_t / np.log(k * np.sum(success_counts + fail_counts) + 2)
     select_rate = np.exp(mean / t) / np.sum(np.exp(mean / t))
@@ -37,6 +57,10 @@ def softmax_annealing_strategy(success_counts, fail_counts, initial_t=0.1, k=100
 
 
 def thompson_sampling_strategy(success_counts, fail_counts):
+    """
+    Thompson Sampling strategy for arm selection.
+    It uses a Beta distribution to model the success probability of each arm and selects the arm with the highest sampled probability.
+    """
     score = scipy.stats.beta.rvs(success_counts + 1, fail_counts + 1)
     return np.argmax(score)
 
