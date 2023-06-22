@@ -11,12 +11,9 @@ class BootstrapTSContextualBandit:
         self.bagging_rate = bagging_rate
         self.seed = seed
         self.models = [
-            [
-                regression_model_cls(**param)
-                for i in range(model_num)
+            [regression_model_cls(**param) for i in range(model_num)]
+            for j in range(self.arm_num)
             ]
-            for j in range(self.arm_num)            
-        ]
         self.is_initialized = False
             
     def fit(self, x, arm, y):
