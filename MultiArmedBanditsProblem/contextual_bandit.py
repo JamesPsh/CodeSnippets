@@ -47,6 +47,8 @@ class BootstrapTSContextualBandit:
         return np.random.normal(mean, sd)
         
     def choice_arm(self, x):
+        '''주어진 컨텍스트에서 가장 높은 보상을 예상할 수 있는 "팔"을 선택'''
+        
         if not self.is_initialized:
             return np.random.choice(self.arm_num, x.shape[0])
 
