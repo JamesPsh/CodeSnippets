@@ -50,7 +50,7 @@ class BootstrapTSContextualBandit:
         return np.random.normal(mean, sd)
         
     def choice_arm(self, x):
-        if self.is_initialized is False:
+        if not self.is_initialized:
             return np.random.choice(self.arm_num, x.shape[0])
 
         score_list = np.zeros((x.shape[0], self.arm_num), dtype=np.float64)
