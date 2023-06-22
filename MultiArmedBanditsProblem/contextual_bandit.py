@@ -60,6 +60,10 @@ class BootstrapTSContextualBandit:
 
 
 def generate_sample_data(sample_num=10000):
+    '''테스트를 위해 샘플 데이터를 생성'''
+
+    # 각 팔의 각 특징에 대한 가중치를 나타내며, 이는 각 팔의 보상을 결정하는 데 사용
+    # 0.0인 부분은 보상계산에 사용되지 않음을 의미함
     weight = np.array([
         [0.05, 0.05, -0.05, 0.0, 0.0, 0.0, 0.0],
         [-0.05, 0.05, 0.05, 0.0, 0.0, 0.0, 0.0],
@@ -67,12 +71,18 @@ def generate_sample_data(sample_num=10000):
     ])
 
     arm_num, feature_num = weight.shape
+
+    # 각 샘플에 대한 특징 벡터를 무작위로 생성
     feature_vector = np.random.rand(sample_num, feature_num)
 
+    # 각 팔에 대한 보상을 계산
+    # 보상은 해당 팔의 가중치와 특징 벡터의 곱의 합으로 계산
     theta = np.zeros((sample_num, arm_num))
     for i in range(arm_num):
         theta[:,i] = np.sum(feature_vector * weight[i], axis = 1)
         
+    # 각 팔이 보상을 제공할 것인지 (1) 아니면 제공하지 않을 것인지 (0)를 결정
+    # 각 팔의 보상(theta)이 무작위로 생성된 임계값을 초과하는지에 따라 결정
     is_cv = (theta > np.random.rand(sample_num, arm_num)).astype(np.int8)
 
     return feature_vector, is_cv
