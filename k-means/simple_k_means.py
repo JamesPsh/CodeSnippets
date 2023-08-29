@@ -10,10 +10,21 @@ class SimpleKMeans:
         self.tol = tol
         self.cluster_centers_ = None
 
+    def _initialize_centroids(self, data):
+        centroids = [data[np.random.choice(data.shape[0])]]
+        
+        for _ in range(1, self.n_clusters):
+            distance2 = np.min([np.linalg.norm(data - c, axis=1)**2 for c in centroids], axis=0)
+            probs = distance2 / np.sum(distance2)
+            next_centroid = data[np.random.choice(data.shape[0], p=probs)]
+            centroids.append(next_centroid)
+            
+        return np.array(centroids)
+
     def fit(self, data):
 
-        # 1. 초기화: 데이터에서 무작위로 K개의 중심점 선택
-        self.cluster_centers_ = data[np.random.choice(data.shape[0], self.n_clusters, replace=False), :]
+        # 1. 초기화: 데이터에서 KMeans++ 방법으로 K개의 중심점 선택
+        self.cluster_centers_ = self._initialize_centroids(data)
 
         for _ in range(self.max_iterations):
             # 2. 할당: 각 데이터 포인트를 가장 가까운 중심점에 할당
