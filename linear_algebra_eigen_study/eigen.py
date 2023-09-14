@@ -1,6 +1,32 @@
 import numpy as np
 
 
+def gram_schmidt_qr(A):
+    '''
+    Computes the QR decomposition of the matrix A using Gram-Schmidt orthogonalization process.
+    
+    Parameters:
+    A (numpy.ndarray): The input matrix
+    
+    Returns:
+    tuple: Orthogonal matrix Q and upper triangular matrix R
+    '''
+    n, m = A.shape
+    Q = np.zeros((n, m))
+    R = np.zeros((m, m))
+
+    for j in range(m):
+        v = A[:, j]
+        for i in range(j):
+            R[i, j] = np.dot(Q[:, i], A[:, j])
+            v = v - (R[i, j] * Q[:, i])
+        
+        R[j, j] = np.linalg.norm(v)
+        Q[:, j] = v / R[j, j]
+    
+    return Q, R
+
+
 def power_iteration(A, num_simulations=100):
     '''
     Computes the largest eigenvalue and the corresponding eigenvector of the matrix A using power iteration method.
@@ -20,7 +46,7 @@ def power_iteration(A, num_simulations=100):
         Ab = np.dot(A, b_k)
         
         # Compute the norm of the vector Ab
-        b_k_norm = np.linalg.norm(Ab)
+        b_k_norm = np.sqrt(np.sum(Ab**2))
         
         # Re normalize the vector
         b_k = Ab / b_k_norm
@@ -47,7 +73,7 @@ def qr_algorithm(A, num_simulations=100):
     Q_total = np.eye(d)
     for _ in range(num_simulations):
         # Compute the QR decomposition of A
-        Q, R = np.linalg.qr(A)
+        Q, R = gram_schmidt_qr(A)
         
         # Compute the product RQ
         A = np.dot(R, Q)
