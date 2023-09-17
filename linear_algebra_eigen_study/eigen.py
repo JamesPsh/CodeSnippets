@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 
 def gram_schmidt_qr(A):
@@ -92,31 +93,29 @@ def qr_algorithm(A, num_simulations=100):
 
 if __name__ == '__main__':
 
+    decimals = 3
+
     # Define the matrix A
     A = np.array([[4, 1], [1, 3]])
 
     # Use np.linalg.eig to compute the eigenvalues and eigenvectors
     eig_vals_np, eig_vecs_np = np.linalg.eig(A)
+    eig_vals_np, eig_vecs_np = np.round(eig_vals_np, decimals), np.round(eig_vecs_np, decimals)
 
     # Use power_iteration to compute the largest eigenvalue and corresponding eigenvector
     largest_eig_val_power_iter, largest_eig_vec_power_iter = power_iteration(A)
+    largest_eig_val_power_iter, largest_eig_vec_power_iter = np.round(largest_eig_val_power_iter, decimals), np.round(largest_eig_vec_power_iter, decimals)
 
     # Use qr_algorithm to compute all eigenvalues and eigenvectors
     eig_vals_qr, eig_vecs_qr = qr_algorithm(A)
+    eig_vals_qr, eig_vecs_qr = np.round(eig_vals_qr, decimals), np.round(eig_vecs_qr, decimals)
 
     # Print the results
-    print("Using np.linalg.eig:")
-    print("Eigenvalues:", eig_vals_np)
-    print("Eigenvectors:")
-    print(eig_vecs_np)
-    print()
+    result = []
+    result.append({'type':'np.linalg.eig', 'Eigenvalues':eig_vals_np, 'Eigenvectors':eig_vecs_np})
+    result.append({'type':'qr_algorithm', 'Eigenvalues':eig_vals_qr, 'Eigenvectors':eig_vecs_qr})
+    result.append({'type':'power_iteration', 'Eigenvalues':largest_eig_val_power_iter, 'Eigenvectors':largest_eig_vec_power_iter})
 
-    print("Using power_iteration (for largest eigenvalue and eigenvector):")
-    print("Largest Eigenvalue:", largest_eig_val_power_iter)
-    print("Corresponding Eigenvector:", largest_eig_vec_power_iter)
-    print()
-
-    print("Using qr_algorithm:")
-    print("Eigenvalues:", eig_vals_qr)
-    print("Eigenvectors:")
-    print(eig_vecs_qr)
+    result = pd.DataFrame(result)
+    print(result)
+    print('Note: The "power_iteration" method only computes the largest eigenvalue and its corresponding eigenvector.')
