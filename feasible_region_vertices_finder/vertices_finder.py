@@ -1,5 +1,6 @@
 import numpy as np
 from itertools import combinations
+import pandas as pd
 
 def find_intersections(A, b):
     """
@@ -41,8 +42,6 @@ b = np.array([5, 6, 1, 0, 0])
 vertices = find_intersections(A, b)
 
 # Display the results
-import pandas as pd
 df_vertices = pd.DataFrame(vertices, columns=['x1', 'x2'])
-import ace_tools as tools; tools.display_dataframe_to_user(name="Feasible Region Vertices", dataframe=df_vertices)
-
-print(df_vertices)
+print("Feasible Region Vertices:")
+print(df_vertices.to_string(index=False))
