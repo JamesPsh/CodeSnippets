@@ -6,11 +6,11 @@ def find_intersections(A, b):
     Finds all vertices of the feasible region defined by linear constraints.
     
     Parameters:
-    A (ndarray): Constraint matrix
-    b (ndarray): Constraint bounds vector
-
+    A (ndarray): Constraint matrix of shape (m, n)
+    b (ndarray): Constraint bounds vector of shape (m,)
+    
     Returns:
-    list: List of feasible vertices
+    list: List of feasible vertices, each represented as an ndarray of shape (n,)
     """
     m, n = A.shape
     vertices = []
