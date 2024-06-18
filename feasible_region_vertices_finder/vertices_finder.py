@@ -29,7 +29,7 @@ def find_intersections(A, b):
 
     return vertices
 
-# Example constraints: A <= b
+# Example constraints: Ax <= b
 A = np.array([
     [1, 2],
     [2, 1],
